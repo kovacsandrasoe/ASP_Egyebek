@@ -1,17 +1,60 @@
-﻿@{
-    ViewData["Title"] = "Contact";
+﻿Name: <input type="text" id="person_name" />
+<button onclick="AddPerson()">Személy hozzáadása</button>
+
+<button onclick="LoadPersons()">Betöltés</button>
+
+<div id="persons">
+
+</div>
+
+
+@section Scripts{
+    <script>
+
+        
+
+        function AddPerson() {
+            var name = document.getElementById("person_name").value;
+
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var respone = this.responseText;
+                    if (this.response[0] == "o") {
+                        //bekerült
+                        var id = this.response.substring(3);
+                        var container = document.getElementById("persons");
+                        container.innerHTML +=
+                            '<span class="person">' +
+                            name + " (" + id + ")" +
+                            '</span><br/>';
+                    }
+                }
+            }
+
+            xhttp.open("GET", "/Home/AddPerson?name=" + name);
+            xhttp.send();
+        }
+
+        function LoadPersons() {
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var json_text = this.responseText;
+                    var json = JSON.parse(json_text);
+                    for (x in json) {
+                        var container = document.getElementById("persons");
+                        container.innerHTML +=
+                            '<span class="person">' +
+                        json[x].name + " (" + json[x].personId + ")" +
+                            '</span><br/>';
+                    } 
+                }
+            }
+            xhttp.open("GET", "/Home/GetPersons");
+            xhttp.send();
+        }
+    </script>
 }
-<h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
-
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
-
-<address>
-    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
